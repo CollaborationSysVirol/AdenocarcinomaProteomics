@@ -1,0 +1,1087 @@
+---
+title: "Olink proteimics"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+# \textcolor{green}{Sample distribution}
+
+
+```{r,eval=FALSE}
+library(PCAtools)
+count=read.delim("/home/anoop/Desktop/07_RajOlink/MasterData.txt",row.names = 1,check.names = FALSE)
+meta=read.delim("/home/anoop/Desktop/07_RajOlink/Design.txt",row.names = 1)
+p <- PCAtools::pca((count), metadata = meta, removeVar = 0.1)
+write.table(p$rotated,file = "/home/anoop/Desktop/07_RajOlink/PCA.txt",sep = "\t",col.names = NA,quote = FALSE)
+head(p$variance)
+
+```
+
+```{r}
+library(ggplot2)
+library(ggrepel)
+dat=read.delim("/home/anoop/Desktop/07_RajOlink/PCA.txt",row.names = 1,check.names = FALSE)
+gg <- merge(dat,aggregate(cbind(mean.pc1=PC1,mean.pc2=PC2)~Group,dat,mean),by="Group")
+pdf("/home/anoop/Desktop/07_RajOlink/PCA.pdf")
+ggplot(gg, aes(PC1,PC2,color=Group))+geom_point(size=3,aes(fill=Group),shape=21)+
+  geom_point(aes(x=mean.pc1,y=mean.pc2,fill=Group,color=Group),size=3.5,shape=21)+theme_gray()+
+  geom_segment(aes(x=mean.pc1, y=mean.pc2, xend=PC1, yend=PC2))+
+  geom_label_repel(aes(label = Label),segment.color = '#cccccc',fill=NA,color="black",size=2.5,
+                   label.size = NA,segment.alpha=0.75,box.padding=0,max.overlaps = 500)+
+  labs(x="PC1, 56.82% variation",y="PC2, 5.17% variation")+
+  theme(axis.title = element_text(size=10),legend.position = "right",plot.margin = margin(0,0,0,0, "cm"),
+        legend.title=element_blank(),legend.text=element_text(size=10),legend.key.size = unit(0.5, "cm"))+
+  guides(shape = guide_legend(ncol =1,override.aes=list(fill="grey",color="grey")),color = guide_legend(ncol =1),fill = guide_legend(ncol =1))
+dev.off()
+```
+
+```{r,eval=FALSE}
+library(PCAtools)
+count=read.delim("/home/anoop/Desktop/07_RajOlink/FiltData.txt",row.names = 1,check.names = FALSE)
+meta=read.delim("/home/anoop/Desktop/07_RajOlink/FiltDesign.txt",row.names = 1)
+p <- PCAtools::pca((count), metadata = meta, removeVar = 0.1)
+
+
+write.table(p$rotated,file = "/home/anoop/Desktop/07_RajOlink/PCAFilt.txt",sep = "\t",col.names = NA,quote = FALSE)
+head(p$variance)
+
+```
+
+```{r}
+library(ggplot2)
+library(ggrepel)
+dat=read.delim("/home/anoop/Desktop/07_RajOlink/PCAFilt.txt",row.names = 1,check.names = FALSE)
+gg <- merge(dat,aggregate(cbind(mean.pc1=PC1,mean.pc2=PC2)~Group,dat,mean),by="Group")
+pdf("/home/anoop/Desktop/07_RajOlink/PCA2.pdf")
+ggplot(gg, aes(PC1,PC2,color=Group))+geom_point(size=3,aes(fill=Group),shape=21)+
+  geom_point(aes(x=mean.pc1,y=mean.pc2,fill=Group,color=Group),size=3.5,shape=21)+theme_gray()+
+  geom_segment(aes(x=mean.pc1, y=mean.pc2, xend=PC1, yend=PC2))+
+  scale_color_manual(values=c(Recurr="#990000",NonRecurr="#2a4e6c"))+
+    scale_fill_manual(values=c(Recurr="#b20000",NonRecurr="#315b7d"))+
+  labs(x="PC1, 15.25% variation",y="PC2, 6.34% variation")+
+  stat_ellipse(geom = "polygon",aes(fill = Group), alpha = 0.25,linetype = "dotted",level = 0.9)+
+  theme(axis.title = element_text(size=10),legend.position = "right",plot.margin = margin(0,0,0,0, "cm"),
+        legend.title=element_blank(),legend.text=element_text(size=10),legend.key.size = unit(0.5, "cm"))+
+  guides(shape = guide_legend(ncol =1,override.aes=list(fill="grey",color="grey")),color = guide_legend(ncol =1),fill = guide_legend(ncol =1))
+dev.off()
+```
+
+```{r}
+library(ggplot2)
+library(ggrepel)
+dat=read.delim("/home/anoop/Desktop/07_RajOlink/PCAFilt.txt",row.names = 1,check.names = FALSE)
+pdf("/home/anoop/Desktop/07_RajOlink/PCA3.pdf")
+ggplot(dat, aes(PC1,PC2,color=Group))+geom_point(size=3,aes(fill=Group),shape=21)+
+  geom_point(aes(PC1,PC2,fill=Group,color=Group),size=3.5,shape=21)+theme_gray()+
+  scale_color_manual(values=c(Recurr="#990000",NonRecurr="#2a4e6c"))+
+    scale_fill_manual(values=c(Recurr="#b20000",NonRecurr="#315b7d"))+
+  geom_label_repel(aes(label = rownames(dat)),segment.color = '#cccccc',fill=NA,color="black",size=2.5,
+                   label.size = NA,segment.alpha=0.75,box.padding=0,max.overlaps = 500)+
+  labs(x="PC1, 15.25% variation",y="PC2, 6.34% variation")+
+  stat_ellipse(geom = "polygon",aes(fill = Group), alpha = 0.25,linetype = "dotted",level = 0.9)+
+  theme(axis.title = element_text(size=10),legend.position = "right",plot.margin = margin(0,0,0,0, "cm"),
+        legend.title=element_blank(),legend.text=element_text(size=10),legend.key.size = unit(0.5, "cm"))+
+  guides(shape = guide_legend(ncol =1,override.aes=list(fill="grey",color="grey")),color = guide_legend(ncol =1),fill = guide_legend(ncol =1))
+dev.off()
+```
+
+
+```{r,eval=FALSE}
+library(rstatix)  
+library(ggpubr)
+library(tidyverse)
+
+data=read.delim("/home/anoop/Desktop/07_RajOlink/FiltData.txt",check.names = FALSE,row.names = 1)
+M=as.data.frame(t(data))
+write.table(M,file="/home/anoop/Desktop/07_RajOlink/FiltDataMW.txt",sep="\t",quote = FALSE,col.names = NA)
+
+des=read.delim("/home/anoop/Desktop/07_RajOlink/FiltDesign.txt",row.names = 1)
+head(des$Group)
+DATA1=read.delim("/home/anoop/Desktop/07_RajOlink/FiltDataMW.txt",row.names = 1,check.names = FALSE)
+DATA=2^DATA1
+DATA$Group=des$Group
+
+mydata <- DATA %>% as_tibble()
+mydata.long <- mydata %>%
+  pivot_longer(-Group, names_to = "variables", values_to = "value")
+
+results <- mydata.long %>% group_by(variables) %>% wilcox_test(value ~ Group,paired = FALSE) %>% adjust_pvalue(method = "BH") %>% add_significance()
+write.table(as.data.frame(results),file="/home/anoop/Desktop/07_RajOlink/ResultsMW_NL.txt",sep = "\t",col.names = NA,quote = FALSE)
+
+
+results2 <- mydata.long %>% group_by(variables) %>% get_summary_stats()
+
+data("ToothGrowth")
+
+results2=mydata.long %>%
+  group_by(variables, Group) %>%
+  get_summary_stats(value, type = "common")
+
+head(results2)
+
+
+test=results2 %>% 
+  arrange(variables) %>%
+  group_by(variables)  %>%
+  summarize(fold_change = log2(mean[2] / mean[1]),Group1=Group[1],Group2=Group[2],Median1=median[1],Median2=median[2],Mean1=mean[1],
+            Mean2=mean[2],IQR1=iqr[1],IQR2=iqr[2],SD1=sd[1],SD2=sd[2])
+
+
+```
+
+
+```{r, eval=FALSE}
+library("limma")
+sampleinfo <- read.delim("/home/anoop/Desktop/07_RajOlink/FiltDesign.txt",row.names = 1)
+design <- model.matrix(~0+Group,data = sampleinfo)
+data=read.delim("/home/anoop/Desktop/07_RajOlink/FiltData.txt",sep="\t",
+                row.names=1,check.names = FALSE)
+
+mat <- as.matrix(data)
+fit <- lmFit(mat,design)
+
+
+cont.matrix <- makeContrasts(Comparison=GroupRecurr - GroupNonRecurr,levels=design)
+fit.cont <- contrasts.fit(fit, cont.matrix)
+fit.cont <- eBayes(fit.cont,trend = TRUE)
+limma.res <- topTable(fit.cont,coef="Comparison",sort.by="p",n="Inf")
+write.table(limma.res,file="/home/anoop/Desktop/07_RajOlink/Limma.txt",sep="\t",quote=FALSE,col.names = NA)
+
+
+```
+
+
+```{r, eval=FALSE}
+library("limma")
+sampleinfo <- read.delim("/home/anoop/Desktop/07_RajOlink/Test/FiltDesign2.txt",row.names = 1)
+design <- model.matrix(~0+Group+age+sex+smoking,data = sampleinfo)
+data=read.delim("/home/anoop/Desktop/07_RajOlink/Test/FiltData.txt",sep="\t",
+                row.names=1,check.names = FALSE)
+
+mat <- as.matrix(data)
+fit <- lmFit(mat,design)
+
+
+cont.matrix <- makeContrasts(Comparison=GroupRecurr - GroupNonRecurr,levels=design)
+fit.cont <- contrasts.fit(fit, cont.matrix)
+fit.cont <- eBayes(fit.cont,trend = TRUE)
+limma.res <- topTable(fit.cont,coef="Comparison",sort.by="p",n="Inf")
+write.table(limma.res,file="/home/anoop/Desktop/07_RajOlink/Test/Limma.txt",sep="\t",quote=FALSE,col.names = NA)
+
+
+```
+
+```{r, eval=FALSE}
+library("limma")
+sampleinfo <- read.delim("/home/anoop/Desktop/07_RajOlink/Test/FiltDesign2.txt",row.names = 1)
+design <- model.matrix(~0+Group,data = sampleinfo)
+data=read.delim("/home/anoop/Desktop/07_RajOlink/Test/FiltData.txt",sep="\t",
+                row.names=1,check.names = FALSE)
+
+mat <- as.matrix(data)
+fit <- lmFit(mat,design)
+
+
+cont.matrix <- makeContrasts(Comparison=GroupRecurr - GroupNonRecurr,levels=design)
+fit.cont <- contrasts.fit(fit, cont.matrix)
+fit.cont <- eBayes(fit.cont,trend = TRUE)
+limma.res <- topTable(fit.cont,coef="Comparison",sort.by="p",n="Inf")
+write.table(limma.res,file="/home/anoop/Desktop/07_RajOlink/Test/LimmaNoadj.txt",sep="\t",quote=FALSE,col.names = NA)
+
+
+```
+
+
+```{r,eval=FALSE}
+library(rstatix)  
+library(ggpubr)
+library(tidyverse)
+
+data=read.delim("/home/anoop/Desktop/07_RajOlink/Test/FiltData.txt",check.names = FALSE,row.names = 1)
+M=as.data.frame(t(data))
+write.table(M,file="/home/anoop/Desktop/07_RajOlink/Test/FiltDataMW.txt",sep="\t",quote = FALSE,col.names = NA)
+
+des=read.delim("/home/anoop/Desktop/07_RajOlink/Test/FiltDesign2.txt",row.names = 1)
+head(des$Group)
+DATA1=read.delim("/home/anoop/Desktop/07_RajOlink/Test/FiltDataMW.txt",row.names = 1,check.names = FALSE)
+DATA=2^DATA1
+DATA$Group=des$Group
+
+mydata <- DATA %>% as_tibble()
+mydata.long <- mydata %>%
+  pivot_longer(-Group, names_to = "variables", values_to = "value")
+
+results <- mydata.long %>% group_by(variables) %>% wilcox_test(value ~ Group,paired = FALSE) %>% adjust_pvalue(method = "BH") %>% add_significance()
+write.table(as.data.frame(results),file="/home/anoop/Desktop/07_RajOlink/Test/ResultsMW.txt",sep = "\t",col.names = NA,quote = FALSE)
+```
+
+
+# K-means clustering
+
+
+```{r,eval=FALSE}
+library(PCAtools)
+count=read.delim("/home/anoop/Desktop/07_RajOlink/Cluster/FiltData.txt",row.names = 1,check.names = FALSE)
+meta=read.delim("/home/anoop/Desktop/07_RajOlink/Cluster/FiltDesign.txt",row.names = 1)
+p <- PCAtools::pca((count), metadata = meta, removeVar = 0.1)
+
+
+write.table(p$rotated,file = "/home/anoop/Desktop/07_RajOlink/Cluster/PCA.txt",sep = "\t",col.names = NA,quote = FALSE)
+head(p$variance)
+
+```
+
+```{r}
+library(ggplot2)
+library(ggrepel)
+dat=read.delim("/home/anoop/Desktop/07_RajOlink/Cluster/PCA.txt",row.names = 1,check.names = FALSE)
+pdf("/home/anoop/Desktop/07_RajOlink/Cluster/PCA.pdf")
+ggplot(dat, aes(PC1,PC2,color=Group))+
+  geom_point(aes(x=PC1,y=PC2,fill=Group,color=Group),size=2.5,shape=21)+theme_gray()+
+  scale_color_manual(values=c(Recurr="#990000",NonRecurr="#2a4e6c"))+
+    scale_fill_manual(values=c(Recurr="#b20000",NonRecurr="#315b7d"))+
+  labs(x="PC1, 14.61% variation",y="PC2, 4.9% variation")+
+  theme(axis.title = element_text(size=10),legend.position = "right",plot.margin = margin(3.5,2,3.5,2, "cm"),
+        legend.title=element_blank(),legend.text=element_text(size=10),legend.key.size = unit(0.5, "cm"))+
+  guides(shape = guide_legend(ncol =1,override.aes=list(fill="grey",color="grey")),color = guide_legend(ncol =1),fill = guide_legend(ncol =1))
+dev.off()
+```
+
+
+
+```{r}
+library(tidyverse)  # data manipulation
+library(cluster)    # clustering algorithms
+library(factoextra)
+
+data=read.delim("/home/anoop/Desktop/07_RajOlink/Cluster/FiltData.txt",header=TRUE,row.names = 1,check.names = FALSE)
+df<-scale(t(data))
+df <- na.omit(df)
+distance <- get_dist(df)
+pdf("/home/anoop/Desktop/07_RajOlink/Cluster/Index.pdf")
+p=fviz_dist(distance, gradient = list(low = "#00AFBB", mid = "white", high = "#FC4E07"),show_labels = FALSE)
+dev.off()
+library(reshape)
+m=cast(p$data,Var1 ~ Var2)
+write.table(m,file="/home/anoop/Desktop/07_RajOlink/Cluster/Euclidian.txt",sep="\t",col.names = NA,quote = FALSE)
+write.table(p$data,file="/home/anoop/Desktop/07_RajOlink/Cluster/Euclidian2.txt",sep="\t",col.names = NA,quote = FALSE)
+```
+
+```{r}
+pdf("/home/anoop/Desktop/07_RajOlink/Cluster/silhouette.pdf")
+fviz_nbclust(df, kmeans, method = "silhouette")
+dev.off()
+```
+
+```{r}
+set.seed(123456)
+k2 <- kmeans(df, centers =2 , nstart = 50)
+```
+
+```{r}
+fviz_cluster(k2, data = df)
+write.table(as.data.frame(k2$cluster),file="/home/anoop/Desktop/07_RajOlink/Cluster/Kmeans2.txt",sep = "\t",col.names = NA,quote = FALSE)
+```
+
+
+```{r}
+set.seed(123456)
+k3 <- kmeans(df, centers =3 , nstart = 50)
+```
+
+```{r}
+fviz_cluster(k3, data = df)
+write.table(as.data.frame(k3$cluster),file="/home/anoop/Desktop/07_RajOlink/Cluster/Kmeans3.txt",sep = "\t",col.names = NA,quote = FALSE)
+```
+
+
+```{r}
+library(ggplot2)
+library(ggrepel)
+dat=read.delim("/home/anoop/Desktop/07_RajOlink/Cluster/PCA.txt",row.names = 1,check.names = FALSE)
+pdf("/home/anoop/Desktop/07_RajOlink/Cluster/PCACls3.pdf")
+ggplot(dat, aes(PC1,PC2,color=Cls3))+
+  geom_point(aes(x=PC1,y=PC2,fill=Cls3,color=Cls3),size=2.5,shape=21)+theme_gray()+
+  labs(x="PC1, 15.25% variation",y="PC2, 6.34% variation")+
+  geom_label_repel(aes(label = RecMonths),segment.color = '#cccccc',fill=NA,color="black",size=2.5,
+                   label.size = NA,segment.alpha=0.75,box.padding=0,max.overlaps = 500)+
+  theme(axis.title = element_text(size=10),legend.position = "right",plot.margin = margin(3.5,2,3.5,2, "cm"),
+        legend.title=element_blank(),legend.text=element_text(size=10),legend.key.size = unit(0.5, "cm"))+
+  guides(shape = guide_legend(ncol =1,override.aes=list(fill="grey",color="grey")),color = guide_legend(ncol =1),fill = guide_legend(ncol =1))
+dev.off()
+```
+
+
+```{r}
+library(ggplot2)
+library(ggrepel)
+dat=read.delim("/home/anoop/Desktop/07_RajOlink/Cluster/PCA.txt",row.names = 1,check.names = FALSE)
+pdf("/home/anoop/Desktop/07_RajOlink/Cluster/PCACls2.pdf")
+ggplot(dat, aes(PC1,PC2,color=Cls2))+
+  geom_point(aes(x=PC1,y=PC2,fill=Cls2,color=Cls2),size=2.5,shape=21)+theme_gray()+
+  labs(x="PC1, 15.25% variation",y="PC2, 6.34% variation")+
+  theme(axis.title = element_text(size=10),legend.position = "right",plot.margin = margin(3.5,2,3.5,2, "cm"),
+        legend.title=element_blank(),legend.text=element_text(size=10),legend.key.size = unit(0.5, "cm"))+
+  guides(shape = guide_legend(ncol =1,override.aes=list(fill="grey",color="grey")),color = guide_legend(ncol =1),fill = guide_legend(ncol =1))
+dev.off()
+```
+
+```{r}
+library(ggplot2)
+library(ggrepel)
+dat=read.delim("/home/anoop/Desktop/07_RajOlink/Cluster/PCA.txt",row.names = 1,check.names = FALSE)
+pdf("/home/anoop/Desktop/07_RajOlink/Cluster/PCAMonths.pdf")
+ggplot(dat, aes(PC1,PC2,color=RecMonths))+
+  geom_point(aes(x=PC1,y=PC2,fill=RecMonths,color=RecMonths),size=2.5,shape=21)+theme_gray()+
+  labs(x="PC1, 15.25% variation",y="PC2, 6.34% variation")+
+  
+  theme(axis.title = element_text(size=10),legend.position = "right",plot.margin = margin(3.5,2,3.5,2, "cm"),
+        legend.title=element_blank(),legend.text=element_text(size=10),legend.key.size = unit(0.5, "cm"))+
+  guides(shape = guide_legend(ncol =1,override.aes=list(fill="grey",color="grey")),color = guide_legend(ncol =1),fill = guide_legend(ncol =1))
+dev.off()
+```
+
+
+
+```{r, eval=FALSE}
+library("limma")
+sampleinfo <- read.delim("/home/anoop/Desktop/07_RajOlink/Cluster/Design.txt",row.names = 1)
+design <- model.matrix(~0+Cls2+age+sex+smoking,data = sampleinfo)
+data=read.delim("/home/anoop/Desktop/07_RajOlink/Cluster/FiltData.txt",sep="\t",
+                row.names=1,check.names = FALSE)
+
+mat <- as.matrix(data)
+fit <- lmFit(mat,design)
+
+
+cont.matrix <- makeContrasts(Comparison=Cls2Kmeans_1 - Cls2Kmeans_2,levels=design)
+fit.cont <- contrasts.fit(fit, cont.matrix)
+fit.cont <- eBayes(fit.cont,trend = TRUE)
+limma.res <- topTable(fit.cont,coef="Comparison",sort.by="p",n="Inf")
+write.table(limma.res,file="/home/anoop/Desktop/07_RajOlink/Cluster/Limma_Kmeans_1(Exp)_vs_Kmeans_2(Ctl).txt",sep="\t",quote=FALSE,col.names = NA)
+
+
+```
+
+```{r,warning=FALSE,message=FALSE,eval=FALSE}
+
+library(piano)
+data=read.delim("/home/anoop/Desktop/07_RajOlink/Cluster/Piano.txt",header = TRUE,row.names = 1)
+p <- data[4]
+head(p)
+lfc<-data[1]
+head(lfc)
+set.seed(123)
+
+geneSets <- loadGSC(file = "/home/anoop/Desktop/Macrophage/AssociationNetwork/GeneSet/KEGG.gmt")
+gsares <- runGSA(geneLevelStats=p,directions=lfc,adjMethod = "BH",
+                 gsc = geneSets,
+                 nPerm = 1000)
+res=GSAsummaryTable(gsares)
+write.table(res,file="/home/anoop/Desktop/07_RajOlink/Cluster/PianoKEGG_Results.txt",sep="\t",col.names = NA,quote = FALSE)
+```
+
+
+```{r,warning=FALSE,message=FALSE,eval=FALSE}
+
+library(piano)
+data=read.delim("/home/anoop/Desktop/07_RajOlink/Cluster/Piano.txt",header = TRUE,row.names = 1)
+p <- data[4]
+head(p)
+lfc<-data[1]
+head(lfc)
+set.seed(123)
+
+geneSets <- loadGSC(file = "/home/anoop/Desktop/07_RajOlink/KEGG_2021_Human.txt")
+gsares <- runGSA(geneLevelStats=p,directions=lfc,adjMethod = "BH",
+                 gsc = geneSets,
+                 nPerm = 1000)
+res=GSAsummaryTable(gsares)
+write.table(res,file="/home/anoop/Desktop/07_RajOlink/Cluster/PianoKEGG_Results2.txt",sep="\t",col.names = NA,quote = FALSE)
+```
+
+# Figures
+
+```{r,eval=FALSE}
+library(ComplexHeatmap)
+library(circlize)
+CelFr=read.delim("/home/anoop/Desktop/07_RajOlink/Cluster/Figures/Euclidian.txt",header = TRUE,check.names = FALSE,row.names = 1)
+
+col_fun1 = colorRamp2(c(0,45,50,60,75,90,100,120), c("#510000","#5b0000","#751919","#843232","white","#a2c0d9","#4682b4","#2a4e6c"))
+
+
+sample=read.delim("/home/anoop/Desktop/07_RajOlink/Cluster/Figures/Design.txt",row.names = 1)
+
+chrt_anno = HeatmapAnnotation(df = sample, simple_anno_size = unit(0.15, "cm"),
+                              annotation_name_gp = gpar(fontsize = 0),na_col = "white",show_annotation_name = FALSE,
+                              annotation_legend_param  = list(grid_width = unit(0.25, "cm"),
+                                                              grid_height = unit(0.25, "cm"),
+                                                              title_gp = gpar(fontsize = 6),
+                                                              labels_gp = gpar(fontsize = 6)),
+                              col = list(Cluster=c("Cluster_2"="#FFA500","Cluster_1"="#48690E"),
+                                         Age=colorRamp2(c(40,40,50,60,70,90), c("#e1e2c9","#c3c693","#9ca04c",
+                                                                                "#6d7035","#4e5026","#2e3016")),
+                                         Sex=c("Man"="#3232ff","Women"="pink"),
+                                         Smoking = c("1. Non_smoker" = "#99d2d2","2. Ex_smoker" = "#009090","3. Smoker"="#004848")))
+
+
+row_ann2 = rowAnnotation(df = sample, simple_anno_size = unit(0.15, "cm"),
+                              annotation_name_gp = gpar(fontsize = 0),na_col = "white",show_annotation_name = FALSE,
+                              annotation_legend_param  = list(grid_width = unit(0.25, "cm"),
+                                                              grid_height = unit(0.25, "cm"),
+                                                              title_gp = gpar(fontsize = 6),
+                                                              labels_gp = gpar(fontsize = 6)),
+                              col = list(Cluster=c("Cluster_2"="#FFA500","Cluster_1"="#48690E"),
+                                         Age=colorRamp2(c(40,40,50,60,70,90), c("#e1e2c9","#c3c693","#9ca04c",
+                                                                                "#6d7035","#4e5026","#2e3016")),
+                                         Sex=c("Man"="#3232ff","Women"="pink"),
+                                         Smoking = c("1. Non_smoker" = "#99d2d2","2. Ex_smoker" = "#009090","3. Smoker"="#004848")))
+
+
+H1=Heatmap(CelFr,cluster_columns = FALSE,show_column_names = FALSE,col = col_fun1,top_annotation =chrt_anno
+           ,row_gap = unit(0.5, "mm"),column_split = sample$Cluster,row_dend_width = unit(0.4, "cm"),
+           column_names_gp = gpar(fontsize = 6),left_annotation = row_ann2,row_split = sample$Cluster,
+           column_dend_height = unit(0.5, "cm"),column_title_gp =gpar(fontsize = 0),cluster_rows = FALSE,
+           row_title_gp = gpar(fontsize = 0),
+           heatmap_legend_param =list(grid_width = unit(0.25, "cm"),grid_height = unit(0.25, "cm"),title_gp = gpar(fontsize = 6),
+                                      labels_gp = gpar(fontsize = 6)),
+           name = "Euclidian Distance",show_row_names = FALSE,row_names_gp=gpar(fontsize = 4),height  = unit(7, "cm"),width  = unit(7, "cm"))
+
+pdf("/home/anoop/Desktop/07_RajOlink/Cluster/Figures/EuclidianHM.pdf")
+draw(H1,heatmap_legend_side = "right", annotation_legend_side = "right",merge_legend = TRUE,ht_gap=unit(0.1, "mm"))
+dev.off()
+```
+
+
+```{r}
+library(ggplot2)
+library(ggrepel)
+dat=read.delim("/home/anoop/Desktop/07_RajOlink/Cluster/PCA.txt",row.names = 1,check.names = FALSE)
+pdf("/home/anoop/Desktop/07_RajOlink/Cluster/Figures/PCA.pdf")
+ggplot(dat, aes(PC1,PC2))+
+  geom_point(aes(x=PC1,y=PC2,fill=Cls2,color=Cls2),size=2.5,shape=21)+theme_gray()+
+  scale_color_manual(values=c("Cluster_2"="#996300","Cluster_1"="#324909"))+
+  scale_fill_manual(values=c("Cluster_2"="#FFA500","Cluster_1"="#48690E"))+
+  labs(x="PC1, 15.25% variation",y="PC2, 6.34% variation")+
+  theme(axis.title = element_text(size=10),legend.position = "right",plot.margin = margin(4.5,3,4.5,3, "cm"),
+        legend.title=element_blank(),legend.text=element_text(size=10),legend.key.size = unit(0.5, "cm"))+
+  guides(shape = guide_legend(ncol =1,override.aes=list(fill="grey",color="grey")),color = guide_legend(ncol =1),fill = guide_legend(ncol =1))
+dev.off()
+```
+
+
+```{r,eval=FALSE}
+library(ComplexHeatmap)
+library(circlize)
+CelFr=read.delim("/home/anoop/Desktop/07_RajOlink/Cluster/Figures/SigniData.txt",header = TRUE,check.names = FALSE,row.names = 1)
+
+col_fun1 = colorRamp2(c(1,0.75,0.5, 0,-0.5,-0.75,-1), c("#b2b200","#e5e500" ,"#ffff00","white","#BF7FBF","#993299","#590059"))
+sample=read.delim("/home/anoop/Desktop/07_RajOlink/Cluster/Figures/Design2.txt",row.names = 1)
+
+chrt_anno = HeatmapAnnotation(df = sample, simple_anno_size = unit(0.15, "cm"),
+                              annotation_name_gp = gpar(fontsize = 0),na_col = "white",show_annotation_name = FALSE,
+                              annotation_legend_param  = list(grid_width = unit(0.25, "cm"),
+                                                              grid_height = unit(0.25, "cm"),
+                                                              title_gp = gpar(fontsize = 6),
+                                                              labels_gp = gpar(fontsize = 6)),
+                              col = list(Cluster=c("Cluster_2"="#FFA500","Cluster_1"="#48690E"),
+                                         Age=colorRamp2(c(40,40,50,60,70,90), c("#e1e2c9","#c3c693","#9ca04c",
+                                                                                "#6d7035","#4e5026","#2e3016")),
+                                         Sex=c("Man"="#3232ff","Women"="pink"),
+                                         Smoking = c("1. Non_smoker" = "#99d2d2","2. Ex_smoker" = "#009090","3. Smoker"="#004848")))
+
+
+H1=Heatmap(t(scale(t(CelFr), center = TRUE, scale = TRUE)),cluster_columns = TRUE,
+           show_column_names = FALSE,col = col_fun1,top_annotation =chrt_anno
+           ,row_gap = unit(0.5, "mm"),column_split = sample$Cluster,row_dend_width = unit(0.4, "cm"),
+           column_names_gp = gpar(fontsize = 6),
+           column_dend_height = unit(0.5, "cm"),column_title_gp =gpar(fontsize = 0),cluster_rows = TRUE,
+           row_title_gp = gpar(fontsize = 0),
+           heatmap_legend_param =list(grid_width = unit(0.25, "cm"),grid_height = unit(0.25, "cm"),title_gp = gpar(fontsize = 6),
+                                      labels_gp = gpar(fontsize = 6)),
+           name = "Zscore",show_row_names = FALSE,row_names_gp=gpar(fontsize = 4),
+           height  = unit(7, "cm"),width  = unit(7, "cm"))
+
+pdf("/home/anoop/Desktop/07_RajOlink/Cluster/Figures/SigniDataHM.pdf")
+draw(H1,heatmap_legend_side = "right", annotation_legend_side = "right",merge_legend = TRUE,ht_gap=unit(0.1, "mm"))
+dev.off()
+```
+
+```{r}
+dat=read.delim("/home/anoop/Desktop/07_RajOlink/Cluster/PCA.txt",row.names = 1)
+gg <- merge(dat,aggregate(cbind(mean.pc1=PC1,mean.pc2=PC2)~Cls2,dat,mean),by="Cls2")
+pdf("/home/anoop/Desktop/07_RajOlink/Cluster/Figures/PCA.pdf")
+ggplot(gg, aes(PC1,PC2,color=Cls2))+geom_point(size=3,aes(fill=Cls2),pch=21)+
+  geom_point(aes(x=mean.pc1,y=mean.pc2,fill=Cls2),size=5,pch=21)+
+  geom_segment(aes(x=mean.pc1, y=mean.pc2, xend=PC1, yend=PC2))+
+ scale_color_manual(values=c("Cluster_2"="#996300","Cluster_1"="#324909"))+
+  scale_fill_manual(values=c("Cluster_2"="#FFA500","Cluster_1"="#48690E"))+
+  labs(x="PC1, 15.25% variation",y="PC2, 6.34% variation")+
+  theme(axis.title = element_text(size=10),legend.position = "bottom",plot.margin = margin(4.5,4.5,4.5,4.5, "cm"),
+        legend.title=element_blank(),legend.text=element_text(size=10),legend.key.size = unit(0.5, "cm"))+
+  guides(shape = guide_legend(nrow = 1,override.aes=list(fill="grey",color="grey")),color = guide_legend(nrow = 1),fill = guide_legend(nrow = 1))+
+stat_ellipse(geom = "polygon",aes(fill = Cls2), alpha = 0.15,linetype = "dotted")
+dev.off()
+```
+
+
+```{r,eval=FALSE}
+library(umap)
+data=read.delim("/home/anoop/Desktop/07_RajOlink/Cluster/MUVR/FiltData.txt",header=TRUE,row.names = 1,check.names = FALSE)
+mads=apply(data,1,mad)
+data=data[rev(order(mads))[1:250],]
+
+write.table(data,file="/home/anoop/Desktop/07_RajOlink/Cluster/MUVR/FiltData250.txt",sep="\t",col.names = NA,quote = FALSE)
+```
+
+
+
+```{r}
+
+library(doParallel)
+library(MUVR)
+
+nCore=10
+nRep=25
+nOuter=8
+varRatio=0.8
+method='RF'
+
+XX=read.delim("/home/anoop/Desktop/07_RajOlink/Cluster/MUVR/FiltData.txt",check.names = FALSE,row.names = 1)
+Y=read.delim("/home/anoop/Desktop/07_RajOlink/Cluster/MUVR/Kmeans2.txt")
+YY=as.factor(Y$CLS)
+
+cl=makeCluster(nCore)
+registerDoParallel(cl)
+classModel = MUVR(X=t(XX), Y=YY, nRep=nRep, nOuter=nOuter, varRatio=varRatio, method=method)
+stopCluster(cl)
+cbind(YY, classModel$yClass)
+classModel$miss
+classModel$nVar
+
+vip=getVIP(classModel, model='min')
+
+pdf("/home/anoop/Desktop/07_RajOlink/Cluster/MUVR/Model_ValidationAll.pdf")
+plotVAL(classModel)
+dev.off()
+
+pdf("/home/anoop/Desktop/07_RajOlink/Cluster/MUVR/SwimLanePlotAll.pdf")
+plotMV(classModel, model='min')
+dev.off()
+
+pdf("/home/anoop/Desktop/07_RajOlink/Cluster/MUVR/StabilityPlotAll.pdf")
+plotStability(classModel, model='mid')
+dev.off()
+
+pdf("/home/anoop/Desktop/07_RajOlink/Cluster/MUVR/VIPAll.pdf")
+plotVIP(classModel, model='mim')
+dev.off()
+
+vip
+write.table(vip,file="/home/anoop/Desktop/07_RajOlink/Cluster/MUVR/MUVRAll.txt",sep="\t",col.names = NA,quote = FALSE)
+
+######################
+library(randomForest)
+```
+
+```{r}
+library(reshape2)
+library(ggpubr)
+Data=read.delim("/home/anoop/Desktop/07_RajOlink/Cluster/MUVR/Boxplot/B1.txt",header = TRUE,check.names = FALSE)
+head(Data)
+M=melt(Data,id.vars = c("Cluster","Group"))
+head(M)
+
+pdf("/home/anoop/Desktop/07_RajOlink/Cluster/MUVR/Boxplot/B1.pdf",width = 10,height = 8)
+ggplot(M)+
+  geom_point(aes(x=factor(Cluster,levels = unique(Cluster)),y=value,color = Group),
+             shape = 19,size=0.9, position = position_jitter(seed = 1, width = .1))+
+  scale_color_manual(values=c("NonRecurr"="#1919ff","Recurr"="#ff1919"))+
+  geom_boxplot(aes(x=factor(Cluster,levels = unique(Cluster)),y=value,fill=Cluster),
+               outlier.shape = NA,alpha=0.75)+
+  facet_wrap(~ variable, ncol = 8,nrow = 2,scales ="free")+
+  scale_fill_manual(values=c("Cluster_2"="#FFA500","Cluster_1"="#48690E"))+
+  theme_bw()+ylab("NPx")+
+  theme(axis.title.x = element_blank(),axis.title.y = element_text(color="black",size=10),
+        legend.position ="bottom",panel.border = element_blank(),
+        axis.ticks.x = element_blank(),axis.text.x = element_blank(),legend.title = element_blank(),
+        legend.text = element_text(size = 10),
+        plot.margin = margin(3.5,0.5,3.5,0.5, "cm"),strip.text.x = element_text(size = 10),
+        axis.text.y = element_text(color="black",size=10),plot.title = element_text(hjust = 0.5,size = 10))+
+  guides(color = guide_legend(nrow = 1),fill = guide_legend(nrow = 1))
+dev.off()
+```
+
+```{r}
+library(reshape2)
+library(ggpubr)
+Data=read.delim("/home/anoop/Desktop/07_RajOlink/Cluster/MUVR/Boxplot/B2.txt",header = TRUE,check.names = FALSE)
+head(Data)
+M=melt(Data,id.vars = c("Cluster","Group"))
+head(M)
+
+pdf("/home/anoop/Desktop/07_RajOlink/Cluster/MUVR/Boxplot/B2.pdf",width = 10,height = 8)
+ggplot(M)+
+  geom_point(aes(x=factor(Cluster,levels = unique(Cluster)),y=value,color = Group),
+             shape = 19,size=0.9, position = position_jitter(seed = 1, width = .1))+
+  scale_color_manual(values=c("NonRecurr"="#1919ff","Recurr"="#ff1919"))+
+  geom_boxplot(aes(x=factor(Cluster,levels = unique(Cluster)),y=value,fill=Cluster),
+               outlier.shape = NA,alpha=0.75)+
+  facet_wrap(~ variable, ncol = 8,nrow = 2,scales ="free")+
+  scale_fill_manual(values=c("Cluster_2"="#FFA500","Cluster_1"="#48690E"))+
+  theme_bw()+ylab("NPx")+
+  theme(axis.title.x = element_blank(),axis.title.y = element_text(color="black",size=10),
+        legend.position ="bottom",panel.border = element_blank(),
+        axis.ticks.x = element_blank(),axis.text.x = element_blank(),legend.title = element_blank(),
+        legend.text = element_text(size = 10),
+        plot.margin = margin(3.5,0.5,3.5,0.5, "cm"),strip.text.x = element_text(size = 10),
+        axis.text.y = element_text(color="black",size=10),plot.title = element_text(hjust = 0.5,size = 10))+
+  guides(color = guide_legend(nrow = 1),fill = guide_legend(nrow = 1))
+dev.off()
+```
+
+
+
+
+```{r,eval=FALSE}
+library(ComplexHeatmap)
+library(circlize)
+CelFr=read.delim("/home/anoop/Desktop/07_RajOlink/Cluster/MUVR/Markers.txt",header = TRUE,check.names = FALSE,row.names = 1)
+
+col_fun1 = colorRamp2(c(-3,-2,-0.5, 0,0.5,2,3), c("#2a4e6c","#4682b4" ,"#a2c0d9","white","#cc99a5","#800020","#590016"))
+#col_fun1 = colorRamp2(c(3,2,1, 0,-1,-2,-3), c("#7F7F00","#B2B200" ,"#E5E500","white","#5D5DFF","#4C4CFF","#0000CC"))
+#col_fun1 = colorRamp2(c(-1, -0.5,0, 0.5,1,2.5), c("#004C00","#008000","white","#E50000","#a00000","#7F0000"))
+
+sample=read.delim("/home/anoop/Desktop/07_RajOlink/Cluster/MUVR/Design.txt",row.names = 1)
+
+chrt_anno = HeatmapAnnotation(df = sample, simple_anno_size = unit(0.2, "cm"),
+                              annotation_name_gp = gpar(fontsize = 0),na_col = "white",show_annotation_name = FALSE,
+                              annotation_legend_param  = list(grid_width = unit(0.25, "cm"),
+                                                              grid_height = unit(0.25, "cm"),
+                                                              title_gp = gpar(fontsize = 6),
+                                                              labels_gp = gpar(fontsize = 6)),
+                              col = list(Cluster=c("Cluster_2"="#FFA500","Cluster_1"="#48690E"),
+                                         Group=c("NonRecurr"="#1919ff","Recurr"="#ff1919"),
+                                         Age=colorRamp2(c(40,50,60,70,80,90), c("#c1babe","#a3989e","#75656e",
+                                                                                "#66545e","#51434b","#3d3238")),
+                                         Packyears=colorRamp2(c(1,10,20,30,40,50,60,120), c("#b2d8d8","#7fbfbf","#4ca6a6",
+                                                                                "#198c8c","#008080","#006666","#004c4c","#004040")),
+                                         RecMonths=colorRamp2(c(1,10,20,30,40,50,80,140), c("#faf6e9","#f6edd3","#eddba7",
+                                                                                "#e4c97c","#dbb750","#d3a625","#bd9521","#937419")),
+                                         Sex=c("Male"="#2a4e6c","Female"="pink"),
+                                         Smoking = c("Ex_smoker" = "#94cca0","Smoker" = "#b29c82","Non_smoker" = "#cccc94")))
+
+
+H1=Heatmap(t(scale(t(CelFr), center = TRUE, scale = TRUE)),cluster_columns = TRUE,show_column_names = FALSE,col = col_fun1,top_annotation =chrt_anno
+           ,row_gap = unit(0.5, "mm"),column_split = sample$Cluster,row_dend_width = unit(0.4, "cm"),
+           column_dend_height = unit(0.5, "cm"),column_title_gp =gpar(fontsize = 0),cluster_rows = TRUE,row_title_gp = gpar(fontsize = 0),
+           heatmap_legend_param =list(grid_width = unit(0.25, "cm"),grid_height = unit(0.25, "cm"),title_gp = gpar(fontsize = 6),
+                                      labels_gp = gpar(fontsize = 6)),
+           name = "Zscore",show_row_names = FALSE,row_names_gp=gpar(fontsize = 5),height  = unit(8, "cm"),width  = unit(8, "cm"))
+
+
+col_fun_lfc = colorRamp2(c(-2,-1,0,1,2), c("#004000","#198c19","white","#b2b200","#333300"))
+
+LFC=data=read.delim("/home/anoop/Desktop/07_RajOlink/Cluster/MUVR/MarkerLFC.txt",row.names = 1)
+H2=Heatmap(LFC,cluster_columns = FALSE,show_column_names = FALSE,col = col_fun_lfc,na_col = "#bfbfbf",
+           ,row_gap = unit(0.5, "mm"),column_dend_height = unit(0.5, "cm"),
+           column_title_gp =gpar(fontsize = 0),cluster_rows = TRUE,row_title_gp = gpar(fontsize = 0),
+           heatmap_legend_param =list(grid_width = unit(0.25, "cm"),grid_height = unit(0.25, "cm"),title_gp = gpar(fontsize = 6),
+                                      labels_gp = gpar(fontsize = 6)),
+           name = "LFC (Cluster1 vs Cluster2)",show_row_names = TRUE,row_names_gp=gpar(fontsize = 6),height  = unit(15, "cm"),width  = unit(0.25, "cm"))
+
+tt=H1+H2
+
+pdf("/home/anoop/Desktop/07_RajOlink/Cluster/MUVR/Marker.pdf")
+draw(tt,heatmap_legend_side = "right", annotation_legend_side = "right",merge_legend = TRUE,ht_gap=unit(0.1, "mm"))
+dev.off()
+```
+
+
+# Cluster Validation
+
+```{r}
+library(tidyverse)  # data manipulation
+library(cluster)    # clustering algorithms
+library(factoextra)
+
+data=read.delim("/home/anoop/Desktop/Collaborations/Raj/07_RajOlink/Cluster/FiltData.txt",header=TRUE,row.names = 1,check.names = FALSE)
+df<-scale(t(data))
+df <- na.omit(df)
+distance <- get_dist(df)
+
+fviz_dist(distance, gradient = list(low = "#00AFBB", mid = "white", high = "#FC4E07"),show_labels = FALSE)
+P1=fviz_nbclust(df, kmeans, method = "silhouette")+labs(title = "Optimal number of clusters (Average silhouette width)")
+
+
+```
+
+```{r}
+
+P2=fviz_nbclust(df, kmeans, method = "gap_stat", nboot = 50) +
+  labs(title = "Optimal number of clusters (Gap Statistic)")
+
+```
+
+```{r}
+library(clusterCrit)
+
+db_scores <- sapply(2:10, function(k) {
+  km <- kmeans(df, centers = k, nstart = 25)
+  intCriteria(as.matrix(df), km$cluster, c("Davies_Bouldin"))[1]
+})
+
+
+```
+
+```{r}
+library(ggplot2)
+
+df <- data.frame(
+  davies_bouldin = 2.444654,
+  davies_bouldin.1 = 2.621637,
+  davies_bouldin.2 = 3.076271,
+  davies_bouldin.3 = 2.654736,
+  davies_bouldin.4 = 2.816138,
+  davies_bouldin.5 = 2.743362,
+  davies_bouldin.6 = 2.317816,
+  davies_bouldin.7 = 2.397368,
+  davies_bouldin.8 = 2.418029
+)
+
+library(tidyr)
+library(dplyr)
+
+df_long <- df %>%
+  pivot_longer(everything(), names_to = "cluster", values_to = "db_score") %>%
+  mutate(k = 2:(length(db_score) + 1))
+
+P3 <- ggplot(df_long, aes(x = k, y = db_score)) +
+  geom_point(colour = "steelblue") +
+  geom_line(colour = "steelblue") +theme_bw()+
+  geom_vline(xintercept = 8,linetype="dashed",colour = "steelblue")+
+  labs(title = "Optimal number of clusters (Davies-Bouldin Index)",
+       x = "Number of Clusters (k)", y = "Davies-Bouldin Index")
+
+
+```
+
+
+```{r}
+library(NbClust)
+
+set.seed(123456)
+res.ch <- NbClust(df, distance = "euclidean", min.nc = 2, max.nc = 10,
+                  method = "kmeans", index = "ch")
+
+```
+
+```{r}
+library(cluster)
+library(factoextra)
+library(fpc)
+
+# Function to compute CH index manually across k
+ch_scores <- sapply(2:10, function(k) {
+  km <- kmeans(df, centers = k, nstart = 25)
+  cluster.stats <- cluster.stats(dist(df), km$cluster)
+  cluster.stats$ch
+})
+
+
+ch_scores <- c(13.365145, 9.004411, 7.532817, 6.832627, 6.036418, 5.464999, 5.014729, 4.690274, 4.472082)
+
+
+ch_df <- data.frame(
+  k = 2:10,
+  ch_score = ch_scores
+)
+
+P4=ggplot(ch_df, aes(x = k, y = ch_score)) +
+  geom_point(colour = "steelblue") +
+  geom_line(colour = "steelblue") +theme_bw()+
+  geom_vline(xintercept = 2,linetype="dashed",colour = "steelblue")+
+  labs(title = "Optimal number of clusters (Calinski-Harabasz Index)",
+       x = "Number of Clusters (k)",
+       y = "Calinski-Harabasz Index")
+```
+
+```{r}
+library(gridExtra)
+pdf("/home/anoop/Desktop/Collaborations/Raj/07_RajOlink/Cluster/ClusterEvaluationMetrics.pdf",width = 12,height = 8)
+grid.arrange(P1, P2, P3, P4, ncol = 2)
+dev.off()
+```
+
+
+```{r,eval=FALSE}
+library(ComplexHeatmap)
+library(circlize)
+
+data=read.delim("/home/anoop/Desktop/Collaborations/Raj/07_RajOlink/Cluster/Figures/FiltData.txt",header=TRUE,row.names = 1,check.names = FALSE)
+
+col_fun1 = colorRamp2(c(1.5,1,0.5, 0,-0.5,-1,-1.5), c("#5b0000","#751919","#843232","white","#a2c0d9","#4682b4","#2a4e6c"))
+
+
+sample=read.delim("/home/anoop/Desktop/Collaborations/Raj/07_RajOlink/Cluster/Figures/Design3.txt",row.names = 1)
+
+chrt_anno = HeatmapAnnotation(df = sample, simple_anno_size = unit(0.15, "cm"),
+                              annotation_name_gp = gpar(fontsize = 0),show_annotation_name = FALSE,
+                              annotation_legend_param  = list(grid_width = unit(0.25, "cm"),
+                                                              grid_height = unit(0.25, "cm"),
+                                                              title_gp = gpar(fontsize = 6),
+                                                              labels_gp = gpar(fontsize = 6)),
+                              col = list(Cluster=c("Cluster_2"="#FFA500","Cluster_1"="#48690E")))
+
+
+H1=Heatmap(t(scale(t(data))),cluster_columns = TRUE,show_column_names = FALSE,
+                   col = col_fun1,top_annotation =chrt_anno,
+                   row_gap = unit(0.5, "mm"),row_dend_width = unit(0.4, "cm"),
+           column_names_gp = gpar(fontsize = 6),clustering_method_columns = "mcquitty",
+           column_dend_height = unit(0.5, "cm"),
+           column_title_gp =gpar(fontsize = 0),
+           row_title_gp = gpar(fontsize = 0),
+           heatmap_legend_param =list(grid_width = unit(0.25, "cm"),
+                                      grid_height = unit(0.25, "cm"),title_gp = gpar(fontsize = 6),
+                                      labels_gp = gpar(fontsize = 6)),
+           name = "Z-score",show_row_names = FALSE,
+           row_names_gp=gpar(fontsize = 4),height  = unit(5, "cm"),width  = unit(5, "cm"))
+
+pdf("/home/anoop/Desktop/Collaborations/Raj/07_RajOlink/Cluster/Figures/HM_mcquitty.pdf")
+draw(H1,heatmap_legend_side = "right", annotation_legend_side = "right",merge_legend = TRUE,ht_gap=unit(0.1, "mm"))
+dev.off()
+```
+
+# test whether the number of significant p-values and the distribution of effect sizes in your actual data exceeds what’s expected by chance
+
+```{r}
+library(tidyverse)
+library(parallel)
+library(limma)
+
+#-----------------------------
+# 1. Load data
+#-----------------------------
+data <- read.delim("~/Desktop/Collaborations/Raj/07_RajOlink/Cluster/FiltData.txt", sep="\t", row.names=1, check.names=FALSE)
+mat <- as.matrix(data)
+
+sampleinfo <- read.delim("~/Desktop/Collaborations/Raj/07_RajOlink/Cluster/Design.txt", row.names = 1)
+
+# Read the original results
+real_res <- read.delim("~/Desktop/Collaborations/Raj/07_RajOlink/Cluster/Limma_Kmeans_1(Exp)_vs_Kmeans_2(Ctl).txt", row.names = 1)
+
+real_sig <- real_res %>%
+  filter(adj.P.Val < 0.001 & abs(logFC) > 1)
+
+#-----------------------------
+# 2. Permutation testing
+#-----------------------------
+n_perms <- 1000
+set.seed(123456)
+
+perm_loop <- mclapply(1:n_perms, function(i) {
+  # Permute class labels only (keep covariates fixed)
+  perm_sampleinfo <- sampleinfo
+  perm_sampleinfo$Cls2 <- sample(perm_sampleinfo$Cls2)
+
+  # Recreate design matrix with permuted labels
+  perm_design <- model.matrix(~0 + Cls2 + age + sex + smoking, data = perm_sampleinfo)
+  
+  # Fit model
+  perm_fit <- lmFit(mat, perm_design)
+  perm_contrast <- makeContrasts(Comparison = Cls2Kmeans_1 - Cls2Kmeans_2, levels=perm_design)
+  perm_fit2 <- contrasts.fit(perm_fit, perm_contrast)
+  perm_fit2 <- eBayes(perm_fit2, trend=TRUE)
+  perm_tab <- topTable(perm_fit2, coef="Comparison", sort.by="none", n=Inf)
+
+  # Count number of significant hits (thresholds)
+  sig_count <- sum(perm_tab$adj.P.Val < 0.001 & abs(perm_tab$logFC) > 1)
+
+  # Collect all logFC values (no filtering) for effect size distribution
+  all_logFCs <- perm_tab$logFC
+
+  list(sig_count = sig_count, all_logFCs = all_logFCs)
+}, mc.cores = detectCores() - 1)
+
+# Extract values from permutations
+perm_sig_counts <- sapply(perm_loop, function(x) x$sig_count)
+perm_logFCs <- unlist(lapply(perm_loop, function(x) x$all_logFCs))
+
+#-----------------------------
+# 3. Real data: effect sizes and significant count
+#-----------------------------
+real_sig_count <- sum(real_res$adj.P.Val < 0.001 & abs(real_res$logFC) > 1)
+real_logFCs <- real_res$logFC[real_res$adj.P.Val < 0.001 & abs(real_res$logFC) > 1]
+
+#-----------------------------
+# 4. Plot: number of significant hits
+#-----------------------------
+pdf("~/Desktop/Collaborations/Raj/07_RajOlink/Cluster/Figures/Hist_NumSig.pdf")
+hist(perm_sig_counts, breaks=30, col="lightgray", border="white",
+     main="Permuted vs Real: Number of Significant Features (adj.P.Val < 0.001 & |logFC| > 1)",
+     xlab="Number of Significant Features")
+abline(v=real_sig_count, col="red", lwd=2)
+legend("topright", legend=paste("Real =", real_sig_count), col="red", lwd=2)
+dev.off()
+
+# Empirical p-value for number of significant hits
+empirical_p <- mean(perm_sig_counts >= real_sig_count)
+cat("Empirical p-value (significant count):", empirical_p, "\n")
+
+#-----------------------------
+# 5. Plot: Effect size distribution
+#-----------------------------
+df_plot <- data.frame(
+  logFC = c(real_logFCs, perm_logFCs),
+  group = rep(c("Real", "Permuted"), c(length(real_logFCs), length(perm_logFCs)))
+)
+
+pdf("~/Desktop/Collaborations/Raj/07_RajOlink/Cluster/Figures/Density.pdf")
+ggplot(df_plot, aes(x = logFC, fill = group)) +
+  geom_density(alpha = 0.5) +
+  theme(plot.margin = margin(4,3,4,3, "cm")) +
+  labs(title = "Effect Size (logFC) Distribution: Real vs Permuted",
+       x = "log Fold Change", y = "Density")
+dev.off()
+```
+
+
+
+```{r}
+library(tidyverse)
+library(parallel)
+library(limma)
+
+#-----------------------------
+# 1. Load data
+#-----------------------------
+data <- read.delim("~/Desktop/Collaborations/Raj/07_RajOlink/Cluster/FiltData.txt", sep="\t", row.names=1, check.names=FALSE)
+mat <- as.matrix(data)
+
+sampleinfo <- read.delim("~/Desktop/Collaborations/Raj/07_RajOlink/Cluster/Design.txt", row.names = 1)
+
+# Read the original results
+real_res <- read.delim("~/Desktop/Collaborations/Raj/07_RajOlink/Cluster/Limma_Kmeans_1(Exp)_vs_Kmeans_2(Ctl).txt", row.names = 1)
+
+real_sig <- real_res %>%
+  filter(adj.P.Val < 0.05)
+
+#-----------------------------
+# 2. Permutation testing
+#-----------------------------
+n_perms <- 1000
+set.seed(123456)
+
+perm_loop <- mclapply(1:n_perms, function(i) {
+  # Permute class labels only (keep covariates fixed)
+  perm_sampleinfo <- sampleinfo
+  perm_sampleinfo$Cls2 <- sample(perm_sampleinfo$Cls2)
+
+  # Recreate design matrix with permuted labels
+  perm_design <- model.matrix(~0 + Cls2 + age + sex + smoking, data = perm_sampleinfo)
+  
+  # Fit model
+  perm_fit <- lmFit(mat, perm_design)
+  perm_contrast <- makeContrasts(Comparison = Cls2Kmeans_1 - Cls2Kmeans_2, levels=perm_design)
+  perm_fit2 <- contrasts.fit(perm_fit, perm_contrast)
+  perm_fit2 <- eBayes(perm_fit2, trend=TRUE)
+  perm_tab <- topTable(perm_fit2, coef="Comparison", sort.by="none", n=Inf)
+
+  # Count number of significant hits (thresholds)
+  sig_count <- sum(perm_tab$adj.P.Val < 0.05)
+
+  # Collect all logFC values (no filtering) for effect size distribution
+  all_logFCs <- perm_tab$logFC
+
+  list(sig_count = sig_count, all_logFCs = all_logFCs)
+}, mc.cores = detectCores() - 1)
+
+# Extract values from permutations
+perm_sig_counts <- sapply(perm_loop, function(x) x$sig_count)
+perm_logFCs <- unlist(lapply(perm_loop, function(x) x$all_logFCs))
+
+#-----------------------------
+# 3. Real data: effect sizes and significant count
+#-----------------------------
+real_sig_count <- sum(real_res$adj.P.Val < 0.05)
+real_logFCs <- real_res$logFC[real_res$adj.P.Val < 0.05]
+
+#-----------------------------
+# 4. Plot: number of significant hits
+#-----------------------------
+pdf("~/Desktop/Collaborations/Raj/07_RajOlink/Cluster/Figures/Hist_NumSig_05.pdf")
+hist(perm_sig_counts, breaks=30, col="lightgray", border="white",
+     main="Permuted vs Real: Number of Significant Features (adj.P.Val < 0.001 & |logFC| > 1)",
+     xlab="Number of Significant Features")
+abline(v=real_sig_count, col="red", lwd=2)
+legend("topright", legend=paste("Real =", real_sig_count), col="red", lwd=2)
+dev.off()
+
+# Empirical p-value for number of significant hits
+empirical_p <- mean(perm_sig_counts >= real_sig_count)
+cat("Empirical p-value (significant count):", empirical_p, "\n")
+
+```
+
+# Comparison between smoking status
+
+```{r, eval=FALSE}
+library("limma")
+sampleinfo <- read.delim("/home/anoop/Desktop/Collaborations/Raj/07_RajOlink/Cluster/Design.txt",row.names = 1)
+design <- model.matrix(~0+smoking+age,data = sampleinfo)
+data=read.delim("/home/anoop/Desktop/Collaborations/Raj/07_RajOlink/Cluster/FiltData.txt",sep="\t",
+                row.names=1,check.names = FALSE)
+
+mat <- as.matrix(data)
+fit <- lmFit(mat,design)
+
+
+cont.matrix <- makeContrasts(Comparison=smokingEx_smoker - smokingNon_smoker,levels=design)
+fit.cont <- contrasts.fit(fit, cont.matrix)
+fit.cont <- eBayes(fit.cont,trend = TRUE)
+limma.res <- topTable(fit.cont,coef="Comparison",sort.by="p",n="Inf")
+write.table(limma.res,file="/home/anoop/Desktop/Collaborations/Raj/07_RajOlink/Cluster/Limma_Ex_smoker(Exp)_vs_Non_smoker(Ctl).txt",sep="\t",quote=FALSE,col.names = NA)
+
+
+cont.matrix <- makeContrasts(Comparison=smokingSmoker - smokingNon_smoker,levels=design)
+fit.cont <- contrasts.fit(fit, cont.matrix)
+fit.cont <- eBayes(fit.cont,trend = TRUE)
+limma.res <- topTable(fit.cont,coef="Comparison",sort.by="p",n="Inf")
+write.table(limma.res,file="/home/anoop/Desktop/Collaborations/Raj/07_RajOlink/Cluster/Limma_Smoker(Exp)_vs_Non_smoker(Ctl).txt",sep="\t",quote=FALSE,col.names = NA)
+
+cont.matrix <- makeContrasts(Comparison=smokingSmoker - smokingEx_smoker,levels=design)
+fit.cont <- contrasts.fit(fit, cont.matrix)
+fit.cont <- eBayes(fit.cont,trend = TRUE)
+limma.res <- topTable(fit.cont,coef="Comparison",sort.by="p",n="Inf")
+write.table(limma.res,file="/home/anoop/Desktop/Collaborations/Raj/07_RajOlink/Cluster/Limma_Smoker(Exp)_vs_Ex_smoker(Ctl).txt",sep="\t",quote=FALSE,col.names = NA)
+
+```
+
+# Comparison between genders
+
+```{r, eval=FALSE}
+library("limma")
+sampleinfo <- read.delim("/home/anoop/Desktop/Collaborations/Raj/07_RajOlink/Cluster/Design.txt",row.names = 1)
+design <- model.matrix(~0+sex+age,data = sampleinfo)
+data=read.delim("/home/anoop/Desktop/Collaborations/Raj/07_RajOlink/Cluster/FiltData.txt",sep="\t",
+                row.names=1,check.names = FALSE)
+
+mat <- as.matrix(data)
+fit <- lmFit(mat,design)
+
+
+cont.matrix <- makeContrasts(Comparison=sexw - sexm,levels=design)
+fit.cont <- contrasts.fit(fit, cont.matrix)
+fit.cont <- eBayes(fit.cont,trend = TRUE)
+limma.res <- topTable(fit.cont,coef="Comparison",sort.by="p",n="Inf")
+write.table(limma.res,file="/home/anoop/Desktop/Collaborations/Raj/07_RajOlink/Cluster/Limma_Female(Exp)_vs_Male(Ctl).txt",sep="\t",quote=FALSE,col.names = NA)
+```
+
+
+\newpage
+# References
+
+
